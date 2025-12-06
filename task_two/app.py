@@ -1,5 +1,5 @@
 import streamlit as st
-import task_two.utils as utils  # <--- Importing your backend module
+import utils  # <--- Importing your backend module
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(page_title="Fynd AI Feedback System", layout="wide")
