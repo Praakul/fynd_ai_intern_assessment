@@ -1,5 +1,9 @@
 # AI Intern Assessment
 
+**Live Deployment of User and Admin for Second task**
+
+- User and Admin Dashboard: [Click Here to View App](https://fyndaiinternassessment.streamlit.app/) *(Note: Use the Sidebar to toggle to the Admin view)*
+
 ## Project Structure
 ```bash
 ├── task_one/
