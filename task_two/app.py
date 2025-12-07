@@ -1,7 +1,7 @@
 import streamlit as st
-import utils  # <--- Importing your backend module
+import utils  
 
-# --- PAGE CONFIGURATION ---
+# Page Configuration
 st.set_page_config(page_title="Fynd AI Feedback System", layout="wide")
 
 # Check API Key
@@ -12,29 +12,26 @@ if not utils.configure_ai():
 # Sidebar Navigation (Simulating two dashboards in one app) 
 page = st.sidebar.radio("Navigation", ["User Dashboard (Public)", "Admin Dashboard (Internal)"])
 
-# ==========================================
-# 👤 USER DASHBOARD (Requirements A) [cite: 44]
-# ==========================================
+# client dashboard
 if page == "User Dashboard (Public)":
     st.title("📝 Submit Feedback")
     st.markdown("We'd love to hear from you!")
 
     with st.form("feedback_form"):
-        # Req: Select a star rating 
+        # select a rating 
         rating = st.slider("Rate your experience", 1, 5, 3)
-        # Req: Write a short review 
+
+        # write a short review 
         review_text = st.text_area("Your Review")
         
-        # Req: Submit it [cite: 48]
+        # submit the review to admin
         submitted = st.form_submit_button("Submit")
         
         if submitted and review_text:
             with st.spinner("AI is analyzing your feedback..."):
-                # Req: AI-generated response returned [cite: 50]
-                # Req: LLM used for user-facing response [cite: 67]
+
                 analysis = utils.get_ai_analysis(rating, review_text)
                 
-                # Req: Data should be stored 
                 utils.save_entry(
                     rating, review_text, 
                     analysis["user_reply"], analysis["summary"], analysis["action"]
@@ -44,27 +41,23 @@ if page == "User Dashboard (Public)":
                 # Display the AI response to the user
                 st.info(f"**Our Reply:** {analysis['user_reply']}")
 
-# ==========================================
-# 🛠️ ADMIN DASHBOARD (Requirements B) [cite: 52]
-# ==========================================
+# admin dashboard
 elif page == "Admin Dashboard (Internal)":
     st.title("📊 Admin Insights")
     
-    # Req: Read from the same stored data source 
+    # Read from the same stored data source 
     df = utils.load_data()
     
     if df.empty:
         st.info("No data yet.")
     else:
-        # Req: Admin Dashboard may include analytics [cite: 59]
+        # Admin Dashboard may include analytics 
         col1, col2 = st.columns(2)
         col1.metric("Total Reviews", len(df))
         col2.metric("Avg Rating", f"{df['Rating'].mean():.1f} ⭐")
 
         st.subheader("Live Feed")
         
-        # Req: Display list including: User rating, User review, AI Summary, AI Actions [cite: 53-57]
-        # Req: LLM used for summarisation [cite: 65] & recommended actions [cite: 66]
         display_cols = ["Timestamp", "Rating", "Review", "Summary", "Action_Item"]
         
         st.dataframe(

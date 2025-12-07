@@ -2,3 +2,6 @@ streamlit
 pandas
 google-generativeai
 python-dotenv
+matplotlib
+seaborn
+scikit-learn
