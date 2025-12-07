@@ -3,15 +3,15 @@ import os
 import json
 import datetime
 import time
+import re  # <--- Added Regex
 import streamlit as st
 from dotenv import load_dotenv
 from openai import OpenAI
 
-# load the env variable
 load_dotenv()
 DATA_FILE = "feedback_data.csv"
 
-# load the model 
+# GROQ CONFIGURATION
 MODEL_NAME = "llama-3.3-70b-versatile" 
 
 def configure_ai():
@@ -52,24 +52,48 @@ def get_ai_analysis(rating, review):
     You are a Customer Experience AI. Analyze this feedback:
     Rating: {rating}/5 Stars
     Review: "{review}"
-    Generate strict JSON with keys: "user_reply", "summary", "action".
+    
+    Generate strict JSON with exactly these keys: "user_reply", "summary", "action".
+    Do not add introductory text.
     """
     
-    while True: # Infinite retry loop 
+    retries = 0
+    max_retries = 3
+    
+    while retries < max_retries:
         try:
+            print(f"🤖 Calling Groq API (Attempt {retries + 1})...")
+            
             response = client.chat.completions.create(
                 model=MODEL_NAME,
                 messages=[
                     {"role": "system", "content": "You are a helpful AI. Output strictly in JSON."},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.7,
+                temperature=0.5,
             )
             raw_text = response.choices[0].message.content.strip()
-            if raw_text.startswith("```json"):
-                raw_text = raw_text.replace("```json", "").replace("```", "")
-            return json.loads(raw_text)
+            
+            # Print what the AI actually said
+            print(f"👀 RAW RESPONSE: {raw_text}")
+
+            # ROBUST PARSING: Find JSON using Regex (ignores "Here is your JSON" text)
+            json_match = re.search(r'\{.*\}', raw_text, re.DOTALL)
+            if json_match:
+                clean_json = json_match.group(0)
+                return json.loads(clean_json)
+            else:
+                raise ValueError("No JSON found in response")
 
         except Exception as e:
-            # cooling down period before retrying
-            time.sleep(5)
+            print(f"❌ API Error: {e}")
+            time.sleep(2)
+            retries += 1
+
+    # Fallback
+    print("⚠️ Max retries reached. Using fallback.")
+    return {
+        "user_reply": "Thank you for your feedback! (System busy)",
+        "summary": "Manual Review Required",
+        "action": "Check Server Logs"
+    }

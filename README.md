@@ -26,23 +26,24 @@ pip install -r requirements.txt
 
 ### 2. Configuration
 
-Create a `.env` file in the root directory and add your Gemini API Key:
+Create a `.env` file in the root directory and add your GROQ API Key:
+
 ```
-GOOGLE_API_KEY="AIzaSy...YourKeyHere"
+GROQ_API_KEY="YourKeyHere"
 ```
 
-**Note:** Both tasks have a "Mock Mode" fallback enabled by default. If the API key is missing or quota is exceeded (429 Error), the system automatically switches to simulated data to ensure the code runs smoothly for review.
+**Note:** The system is built on the OpenAI client standard, making it model-agnostic. It can easily operate with OpenRouter or OpenAI by simply changing the base_url in the code.
 
 ## Task 1: Rating Prediction via Prompting
 
-**Goal:** Classify Yelp reviews (1-5 stars) using Gemini 1.5 Flash.
+**Goal:** Classify Yelp reviews (1-5 stars) using an LLM to evaluate prompt effectivensess.
 
 **Strategies Tested:**
 - **Zero-Shot:** Direct classification.
 - **Few-Shot:** Providing 3 labeled examples (Positive, Neutral, Negative).
 - **Chain-of-Thought (CoT):** Forcing step-by-step reasoning (Pros vs Cons).
 
-**Optimization:** Implemented Batch Processing and Exponential Backoff to handle API rate limits.
+**Optimization:** Implemented Batch Processing and Ultra-Safe Rate Limiting.
 
 **How to Run:** Open `task_one/task_one.ipynb` in Jupyter Notebook or VS Code and run all cells.
 
@@ -65,6 +66,7 @@ GOOGLE_API_KEY="AIzaSy...YourKeyHere"
 ```bash
 streamlit run task_two/app.py
 ```
+
 
 ## Robustness Features
 

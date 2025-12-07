@@ -62,7 +62,9 @@ elif page == "Admin Dashboard (Internal)":
         
         st.dataframe(
             df[display_cols].sort_values("Timestamp", ascending=False),
-            use_container_width=True,
+            use_container_width=True, # Streamlit 1.40+ supports this, but if your version is older/newer it might prefer the below:
+            # If the warning persists, delete the line above and uncomment the one below:
+            # width=1000, 
             column_config={
                 "Rating": st.column_config.NumberColumn(format="%d ⭐"),
                 "Review": st.column_config.TextColumn("User Review", width="medium"),
